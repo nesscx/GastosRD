@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gastos_rd/components/date_picker.dart';
-import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/json/company_expenses_response.dart';
 import 'package:gastos_rd/models/company_expenses.dart';
 import 'package:gastos_rd/models/user.dart';
@@ -30,7 +29,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
 
     final QuerySnapshot snapshot = await Firestore.instance
         .collection("CompanyExpenses")
-        //.where('start_date', isGreaterThan: startDate)
+        .where('date', isGreaterThanOrEqualTo: startDate.toIso8601String(), isLessThanOrEqualTo: endDate.toIso8601String())
         .getDocuments();
     
     if(snapshot.documents.length != 0) {

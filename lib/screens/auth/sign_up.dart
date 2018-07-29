@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gastos_rd/components/group_title.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // import 'package:socialy/data/rest_ds.dart';
 import '../../models/user.dart';
@@ -30,17 +31,15 @@ class _SignUpFormState extends State<SignUpForm> {
   bool _autovalidate = false;
   bool _obscurePassword = true;
   bool _obscureRepeatPassword = true;
-  Widget _signUpButton;
-  User _newUser = User(birthdate: DateTime(1940, 1, 1));
+  User _newUser = User();
   
   void loading(){
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => new Dialog(
         child: SingleChildScrollView(
-          child: new Container(
-            height: 600.0,
-          )
+          child: new CircularProgressIndicator(),
         ),
       ),
     );
@@ -48,7 +47,6 @@ class _SignUpFormState extends State<SignUpForm> {
 
   void _handleSubmitted() {
     final FormState form = _formKey.currentState;
-    form.save();
     if (!form.validate()) {
       setState(() {
         _autovalidate = true;
@@ -62,6 +60,11 @@ class _SignUpFormState extends State<SignUpForm> {
 
   void _signUp() async {
     // await RestDatasource.signUp(_newUser);
+    final DocumentReference documentReference = Firestore.instance.collection("GastosRD").document("User");
+    _newUser.createdDate = DateTime.now();
+
+    documentReference.setData(_newUser.toJson()).whenComplete(() {
+    }).catchError((e) => print(e));
   }
 
   void _showPassword() {
@@ -102,7 +105,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 errorMaxLines: 2,
               ),
               validator: (value) => _validators.validateName(value, "Name"),
-              onSaved: (value) => _newUser.firstName = value,
+              onSaved: (value) => _newUser.name = value,
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 12.0),

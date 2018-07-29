@@ -13,11 +13,11 @@ import '../../services/validators.dart';
 import '../../components/date_picker.dart';
 
 List<Company> _companies = [
-  Company(id: 1, rnc: "1-1111111-1", serviceName: "Service Name 1"), 
-  Company(id: 2, rnc: "2-2222222-2", serviceName: "Service Name 2"), 
-  Company(id: 3, rnc: "3-3333333-3", serviceName: "Service Name 3"), 
-  Company(id: 4, rnc: "4-4444444-4", serviceName: "Service Name 4"), 
-  Company(id: 5, rnc: "5-5555555-5", serviceName: "Service Name 5"), 
+  Company(rnc: "1-1111111-1", serviceName: "Service Name 1"), 
+  Company(rnc: "2-2222222-2", serviceName: "Service Name 2"), 
+  Company(rnc: "3-3333333-3", serviceName: "Service Name 3"), 
+  Company(rnc: "4-4444444-4", serviceName: "Service Name 4"), 
+  Company(rnc: "5-5555555-5", serviceName: "Service Name 5"), 
 ];
 
 Company _company = _companies[0];

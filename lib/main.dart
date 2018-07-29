@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gastos_rd/screens/auth/sign_in.dart';
+import 'package:gastos_rd/screens/auth/sign_up.dart';
 import 'package:gastos_rd/screens/main/about.dart';
 import 'package:gastos_rd/screens/main/company_expenses_register.dart';
 import './screens/main/company_sign_up.dart';
@@ -15,9 +16,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: Scaffold(
-        body: About(),
-      ),
+      home: SignUp(),
     );
   }
 }

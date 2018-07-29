@@ -20,6 +20,8 @@ class _SignInState extends State<SignIn> {
       signInForm.save();
       User user = new User(); // = await RestDatasource.signIn(_username, _password);
       
+      
+      // await var document = documentReference
       print(user);
     } else {
       print('Sign in fields are invalid');

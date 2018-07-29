@@ -1,5 +1,6 @@
+import 'package:gastos_rd/json/company_expenses_response.dart';
+
 class CompanyExpenses {
-  int id;
   String rncSupplier;
   String ncf;
   DateTime date;
@@ -7,9 +8,9 @@ class CompanyExpenses {
   double itbis;
   String imageUri;
   String purchaseConcept;
+  String companyRnc;
 
   CompanyExpenses({
-    this.id,
     this.rncSupplier,
     this.ncf,
     this.date,
@@ -17,5 +18,16 @@ class CompanyExpenses {
     this.itbis,
     this.imageUri,
     this.purchaseConcept,
+    this.companyRnc,
   });
+
+  CompanyExpenses.fromResponse(CompanyExpensesResponse response)
+      : rncSupplier = response.rncSupplier,
+        ncf = response.ncf,
+        date = response.date,
+        total = response.total,
+        itbis = response.itbis,
+        imageUri = response.imageUri,
+        purchaseConcept = response.purchaseConcept,
+        companyRnc = response.companyRnc;
 }

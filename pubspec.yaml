@@ -18,8 +18,13 @@ dependencies:
   cupertino_icons: ^0.1.2
   intl: 
   image_picker: 
+  firebase_core:
+  cloud_firestore: 
+  json_annotation: 
 
 dev_dependencies:
+  build_runner: 
+  json_serializable: 
   flutter_test:
     sdk: flutter
 

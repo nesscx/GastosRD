@@ -141,6 +141,8 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
 
     _newCompanyExpenses.imageUri = downloadUrl.toString();
     _newCompanyExpenses.companyRnc = _newCompany.rnc;
+    _newCompanyExpenses.companyName = _newCompany.name;
+    _newCompanyExpenses.supplierName = (await RestDatasource.fetchCompany(_newCompanyExpenses.rncSupplier)).name;
     
     final DocumentReference documentReference = Firestore.instance.collection("CompanyExpenses").document();
     

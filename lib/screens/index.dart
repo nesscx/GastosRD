@@ -7,7 +7,6 @@ import 'package:gastos_rd/models/company.dart';
 import 'package:gastos_rd/models/user.dart';
 
 // Pages
-import './main/home.dart';
 import './main/company_sign_up.dart';
 import './main/company_expenses_register.dart';
 import './main/search_expenses.dart';
@@ -56,9 +55,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _getDrawerItemWidget(int pos) {
-    if(pos == 0) {
-        return new Home(user);
-    } else if (pos == 1) {
+    if (pos == 1) {
       return new CompanySignUp(user);
     } else if (pos == 2) {
       return new CompanyExpensesRegister(user);
@@ -67,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     } else if (pos == 4) {
       return new About(user);
     } else {
-      return new Home(user);
+      return new About(user);
     }
   }
 
@@ -115,17 +112,6 @@ class _HomePageState extends State<HomePage> {
                   image: userBackgroundImage,
                 ),
               ),
-            ),
-            new ListTile(
-              title: new Text("Home Page"),
-              leading: new Icon(Icons.home,),
-              selected: 0 == _selectedDrawerIndex,
-              onTap: () {
-                _onSelectItem(0);
-                setState((){
-                  _selectedDrawerIndex = 0;
-                });
-              }
             ),
             new ListTile(
               title: new Text("Register a Company"),

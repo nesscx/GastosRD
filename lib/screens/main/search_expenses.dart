@@ -30,9 +30,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
 
     final QuerySnapshot snapshot = await Firestore.instance
         .collection("CompanyExpenses")
-        .orderBy("company_rnc")
-        .where('start_date', isGreaterThanOrEqualTo: startDate)
-        .where('end_date', isGreaterThanOrEqualTo: endDate)
+        //.where('start_date', isGreaterThan: startDate)
         .getDocuments();
     
     if(snapshot.documents.length != 0) {
@@ -40,6 +38,8 @@ class _SearchExpensesState extends State<SearchExpenses> {
         list.add(new CompanyExpenses.fromResponse(CompanyExpensesResponse.fromJson(d.data)));
       });
     }
+
+    print(list);
 
     return list;
   }
@@ -85,14 +85,15 @@ class _SearchExpensesState extends State<SearchExpenses> {
               padding: EdgeInsets.symmetric(vertical: 2.0),
             ),
             CupertinoButton(
-              onPressed: () => {},
+              onPressed: _getCompaniesExpenses,
               padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
               color: Colors.blue[600],
-              child: Text('REGISTER', style: TextStyle(color: Colors.white, fontSize: 18.0),),
+              child: Text('SEARCH', style: TextStyle(color: Colors.white, fontSize: 18.0),),
             ),
           ],
         ),
         Container(
+          height: 489.0,
           child: FutureBuilder<List<CompanyExpenses>>(
           future: _getCompaniesExpenses(),
           builder: (context, snapshot) {
@@ -114,7 +115,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
                             width: 140.0,
                             child: Text('Company:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                           ),
-                          Text(snapshot.data[i].companyName, style: TextStyle(fontSize: 18.0),),
+                          Text(snapshot.data[i].companyName ?? '', style: TextStyle(fontSize: 18.0),),
                         ],
                       ),
                       Padding(padding: EdgeInsets.symmetric(vertical: 4.0),),
@@ -124,7 +125,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
                             width: 140.0,
                             child: Text('Supplier:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                           ),
-                          Text(snapshot.data[i].supplierName, style: TextStyle(fontSize: 18.0),),
+                          Text(snapshot.data[i].supplierName ?? '', style: TextStyle(fontSize: 18.0),),
                         ],
                       ),
                       Padding(padding: EdgeInsets.symmetric(vertical: 4.0),),
@@ -154,7 +155,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
                             width: 140.0,
                             child: Text('Total:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                           ),
-                          Text(snapshot.data[i].total.toString(), style: TextStyle(fontSize: 18.0),),
+                          Text('RD\$${snapshot.data[i].total.toString()}', style: TextStyle(fontSize: 18.0),),
                         ],
                       ),
                       Padding(padding: EdgeInsets.symmetric(vertical: 4.0),),
@@ -164,7 +165,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
                             width: 140.0,
                             child: Text('ITBIS:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                           ),
-                          Text(snapshot.data[i].itbis.toString(), style: TextStyle(fontSize: 18.0),),
+                          Text('RD\$${snapshot.data[i].itbis.toString()}', style: TextStyle(fontSize: 18.0),),
                         ],
                       ),
                       Padding(padding: EdgeInsets.symmetric(vertical: 4.0),),

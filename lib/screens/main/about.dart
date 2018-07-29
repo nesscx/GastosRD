@@ -62,7 +62,7 @@ class About extends StatelessWidget {
                 width: 140.0,
                 child: Text('Created Date:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),),
               ),
-              Text(user.createdDate ?? 'Unknown', style: TextStyle(fontSize: 18.0),),
+              Text(user.createdDate.toIso8601String() ?? 'Unknown', style: TextStyle(fontSize: 18.0),),
             ],
           ),
         ],

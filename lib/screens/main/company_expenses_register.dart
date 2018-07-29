@@ -1,60 +1,96 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gastos_rd/components/group_title.dart';
+import 'package:gastos_rd/data/rest_ds.dart';
+import 'package:gastos_rd/json/company_response.dart';
 import 'package:gastos_rd/models/company.dart';
 import 'package:gastos_rd/models/company_expenses.dart';
+import 'package:gastos_rd/models/user.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 // import 'package:socialy/data/rest_ds.dart';
 import '../../services/validators.dart';
 import '../../components/date_picker.dart';
 
-List<Company> _companies = [
-  Company(rnc: "1-1111111-1", serviceName: "Service Name 1"), 
-  Company(rnc: "2-2222222-2", serviceName: "Service Name 2"), 
-  Company(rnc: "3-3333333-3", serviceName: "Service Name 3"), 
-  Company(rnc: "4-4444444-4", serviceName: "Service Name 4"), 
-  Company(rnc: "5-5555555-5", serviceName: "Service Name 5"), 
-];
+class CompanyExpensesRegister extends StatelessWidget {
+  final User user;
 
-Company _company = _companies[0];
-
-class CompanyExpensesRegister extends StatelessWidget {  
+  CompanyExpensesRegister(this.user);
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView( 
         primary: false,
-        child: CompanyExpensesRegisterForm(),
+        child: FutureBuilder<List<Company>>(
+          future: _getCompanies(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return CompanyExpensesRegisterForm(snapshot.data);
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+            // By default, show a loading spinner
+            return CircularProgressIndicator();
+          },
+        ),
       ),
     );
+  }
+
+  Future<List<Company>> _getCompanies() async {
+    List<Company> list = new List<Company>();
+    final QuerySnapshot snapshot = await Firestore.instance
+        .collection("Company")
+        .where("user_email", isEqualTo: user.email)
+        .getDocuments();
+    
+    if(snapshot.documents.length == 0) {
+      return list;
+    } else {
+      snapshot.documents.forEach((d) { 
+        list.add(new Company.fromResponse(CompanyResponse.fromJson(d.data)));
+      });
+      return list;
+    }
   }
 }
 
 class CompanyExpensesRegisterForm extends StatefulWidget {
+  final List<Company> companies;
+
+  CompanyExpensesRegisterForm(this.companies);
+
   @override
-  _CompanyExpensesRegisterFormState createState() => _CompanyExpensesRegisterFormState();
+  companyExpensesRegisterFormState createState() => companyExpensesRegisterFormState(companies);
 }
 
-class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm> {
-  final TextEditingController _passwordController = new TextEditingController();
+class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final Validators _validators = new Validators();
   bool _autovalidate = false;
   bool _obscurePassword = true;
   bool _obscureRepeatPassword = true;
   CompanyExpenses _newCompanyExpenses = CompanyExpenses(date: DateTime.now());
+  final List<Company> companies;
+  Company _newCompany;
+
+  companyExpensesRegisterFormState(this.companies);
+  
   File _image;
 
-  Future getImage() async {
+  getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
 
-    setState(() {
-      _image = image;
-    });
+    if (image != null) {
+      setState(() {
+        _image = image;
+      });
+    }
   }
 
   void loading(){
@@ -69,10 +105,15 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
       ),
     );
   }
+  
+  void showInSnackBar(String value) {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      content: new Text(value)
+    ));
+  }
 
-  void _handleSubmitted() {
+  void _handleSubmitted() async {
     final FormState form = _formKey.currentState;
-    loading();
     if (!form.validate()) {
       setState(() {
         _autovalidate = true;
@@ -80,17 +121,38 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
       // showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      _signUp();    
+      _newCompany = await RestDatasource.fetchCompany(_newCompanyExpenses.rncSupplier);
+      if (_newCompany == null) {
+        showInSnackBar('RNC is not valid. Please try again.');
+      }
+      else {
+        if (_image != null) {
+          _signUp();
+        } else {
+          showInSnackBar('Photo Evidence is required.');
+        }
+      }
     }
   }
 
   void _signUp() async {
-    print(_newCompanyExpenses);
-    // await RestDatasource.signUp(_newCompanyExpenses);
+    StorageUploadTask putFile = FirebaseStorage.instance.ref().child(_image.path).putFile(_image);
+    Uri downloadUrl = (await putFile.future).downloadUrl;
+
+    _newCompanyExpenses.imageUri = downloadUrl.toString();
+    _newCompanyExpenses.companyRnc = _newCompany.rnc;
+    
+    final DocumentReference documentReference = Firestore.instance.collection("CompanyExpenses").document();
+    
+    documentReference.setData(_newCompanyExpenses.toJson()).whenComplete(() {
+      showInSnackBar('Expense of NCF:${_newCompanyExpenses.ncf} registered successfully!');
+    }).catchError((e) => print(e));
   }
 
   @override
   Widget build(BuildContext context) {
+    Company company = companies[0];
+
     return Padding(
       padding: EdgeInsets.all(32.0),
       child: Form(
@@ -113,21 +175,21 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
                 fillColor: Colors.grey[150],
                 filled: true,
               ),
-              isEmpty: _company == null,
+              isEmpty: company == null,
               child: DropdownButton<Company>(
                 isDense: true,
                 hint: Text('Select a Company'),
-                value: _company,
+                value: company,
                 onChanged: (newValue) {
                   setState(() {
-                    _company = newValue;
+                    company = newValue;
                   });
                 },
-                items: _companies.map((Company company) {
+                items: companies.map((Company company) {
                   return DropdownMenuItem<Company>(
                     value: company,
                     child: Text(
-                      company.serviceName,
+                      company.name,
                       style: TextStyle(color: Colors.black),
                     ),
                   );
@@ -151,7 +213,7 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
                 fillColor: Colors.grey[150],
                 filled: true,
               ),
-              validator: _validators.validateRNC,
+              validator: Validators.validateRNC,
               onSaved: (value) => _newCompanyExpenses.rncSupplier = value,
             ),
             Padding(
@@ -201,7 +263,7 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
                 fillColor: Colors.grey[150],
                 filled: true,
               ),
-              validator: (value) => _validators.validatePrice(value, "Total"),
+              validator: (value) => Validators.validatePrice(value, "Total"),
               onSaved: (value) => _newCompanyExpenses.total = double.parse(value) ?? 0.0,
             ),
             Padding(
@@ -214,7 +276,7 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
                 fillColor: Colors.grey[150],
                 filled: true,
               ),
-              validator: (value) => _validators.validatePrice(value, 'ITBIS'),
+              validator: (value) => Validators.validatePrice(value, 'ITBIS'),
               onSaved: (value) => _newCompanyExpenses.itbis = double.parse(value) ?? 0.0,
             ),
             Padding(
@@ -223,19 +285,13 @@ class _CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterFor
             Row(
               children: <Widget>[
                 Flexible(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Evidence Photo',
-                      fillColor: Colors.grey[150],
-                      filled: true,
-                    ),
-                    validator: (value) => value.length > 0 ? null : 'Evidence Photo is required.',
-                    onSaved: (value) => _newCompanyExpenses.imageUri = value,
-                  ),
+                  child: _image == null 
+                    ? Text('No image to show')
+                    : Image.file(_image),
                 ),
                 Flexible(
                   child: CupertinoButton(
-                    onPressed: () => getImage,
+                    onPressed: getImage,
                     child: Text('Select Photo'),
                   ),
                 ),

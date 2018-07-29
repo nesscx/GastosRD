@@ -27,7 +27,6 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController _passwordController = new TextEditingController();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final Validators _validators = new Validators();
   bool _autovalidate = false;
   bool _obscurePassword = true;
   bool _obscureRepeatPassword = true;
@@ -58,13 +57,28 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
 
+  void showInSnackBar(String value) {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text(value)
+    ));
+  }
+
   void _signUp() async {
-    // await RestDatasource.signUp(_newUser);
-    final DocumentReference documentReference = Firestore.instance.collection("GastosRD").document("User");
+    final DocumentReference documentReference = Firestore.instance.collection("User").document();
     _newUser.createdDate = DateTime.now();
 
-    documentReference.setData(_newUser.toJson()).whenComplete(() {
-    }).catchError((e) => print(e));
+    final QuerySnapshot snapshot = await Firestore.instance
+        .collection("User")
+        .where("email", isEqualTo: _newUser.email)
+        .getDocuments();
+    
+    if(snapshot.documents.length > 0) {
+      showInSnackBar('User with email ${_newUser.email} already exists!');
+    } else {
+      documentReference.setData(_newUser.toJson()).whenComplete(() {
+        Navigator.of(context).pop();
+      }).catchError((e) => print(e));
+    }
   }
 
   void _showPassword() {
@@ -104,7 +118,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 filled: true,
                 errorMaxLines: 2,
               ),
-              validator: (value) => _validators.validateName(value, "Name"),
+              validator: (value) => Validators.validateName(value, "Name"),
               onSaved: (value) => _newUser.name = value,
             ),
             Padding(
@@ -117,7 +131,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 fillColor: Colors.grey[150],
                 filled: true,
               ),
-              validator: _validators.validateEmail,
+              validator: Validators.validateEmail,
               onSaved: (value) => _newUser.email = value,
             ),
             Padding(
@@ -136,7 +150,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 filled: true,
                 labelText: "Password",
               ),
-              validator: _validators.validatePassword,
+              validator: Validators.validatePassword,
               onSaved: (value) => _newUser.password = value,
               obscureText: _obscurePassword,
             ),
@@ -155,7 +169,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 labelText: "Repeat Password",
               ),
               validator: (value) => 
-                _validators.validateRepeatedPassword(value, _passwordController.text),
+                Validators.validateRepeatedPassword(value, _passwordController.text),
               onSaved: (value) => _newUser.passwordConfirmation = value,
               obscureText: _obscureRepeatPassword,
             ),
@@ -175,7 +189,7 @@ class _SignUpFormState extends State<SignUpForm> {
               padding: EdgeInsets.only(top: 24.0),
             ),
             GestureDetector(
-              onTap: () => {},
+              onTap: () => Navigator.of(context).pop(),
               child: Center(
                 child: RichText(
                   textAlign: TextAlign.right,

@@ -9,13 +9,21 @@ part of 'company_response.dart';
 CompanyResponse _$CompanyResponseFromJson(Map<String, dynamic> json) {
   return new CompanyResponse(
       rnc: json['rnc'] as String,
-      serviceName: json['service_name'] as String,
+      name: json['name'] as String,
+      comercialName: json['comercial_name'] as String,
+      category: json['category'] as String,
+      paymentRegimen: json['payment_regimen'] as String,
+      status: json['status'] as String,
       userEmail: json['user_email'] as String);
 }
 
 Map<String, dynamic> _$CompanyResponseToJson(CompanyResponse instance) =>
     <String, dynamic>{
       'rnc': instance.rnc,
-      'service_name': instance.serviceName,
+      'name': instance.name,
+      'comercial_name': instance.comercialName,
+      'category': instance.category,
+      'payment_regimen': instance.paymentRegimen,
+      'status': instance.status,
       'user_email': instance.userEmail
     };

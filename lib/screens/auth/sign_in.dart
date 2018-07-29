@@ -1,33 +1,80 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gastos_rd/json/user_response.dart';
 // import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/models/user.dart';
+import 'package:gastos_rd/screens/auth/sign_up.dart';
+import 'package:gastos_rd/screens/index.dart';
+import 'package:gastos_rd/services/validators.dart';
 
-class SignIn extends StatefulWidget {
+class SignIn extends StatelessWidget {  
   @override
-  _SignInState createState() => _SignInState();
+  Widget build(BuildContext context) {
+    return Scaffold(body: SignInForm());
+  }
 }
 
-class _SignInState extends State<SignIn> {
-  final signInFormKey = GlobalKey<FormState>();
-  String _password;
-  String _email;
+class SignInForm extends StatefulWidget {
+  @override
+  _SignInFormState createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm> {
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  bool _autovalidate = false;
   bool _obscurePassword = true;
+  User user = new User();
   
-  _signIn() async {
-    final signInForm = signInFormKey.currentState;
-    if (signInForm.validate()) {
-      signInForm.save();
-      User user = new User(); // = await RestDatasource.signIn(_username, _password);
-      
-      
-      // await var document = documentReference
-      print(user);
+  void loading(){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => new Dialog(
+        child: SingleChildScrollView(
+          child: new CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  void _handleSubmitted() {
+    final FormState form = _formKey.currentState;
+    if (!form.validate()) {
+      setState(() {
+        _autovalidate = true;
+      });
+      // showInSnackBar('Please fix the errors in red before submitting.');
     } else {
-      print('Sign in fields are invalid');
+      form.save();
+      _signIn();
+    }
+  }
+
+  void _signIn() async {
+    final QuerySnapshot snapshot = await Firestore.instance
+        .collection("User")
+        .where("email", isEqualTo: user.email)
+        .where("password", isEqualTo: user.password)
+        .getDocuments();
+    
+    if(snapshot.documents.length > 0) {
+      User user = User.fromResponse(UserResponse.fromJson(snapshot.documents.first.data));
+
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+        builder: (BuildContext context) => HomePage(user),
+      ));
+    } else {
+      await showInSnackBar('Email or password is incorrect.');
     }
   }
   
+  void showInSnackBar(String value) {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text(value)
+    ));
+  }
+
   void _showPassword() {
     setState(() {
       _obscurePassword = !_obscurePassword;
@@ -36,13 +83,12 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Theme(
-        data: Theme.of(context).copyWith(
-          primaryColor: Colors.white,
-          accentColor: Colors.blue[600],
-        ),
-        child: Container(
+    return Theme(
+      data: Theme.of(context).copyWith(
+        primaryColor: Colors.white,
+        accentColor: Colors.blue[600],
+      ),
+      child: Container(
         decoration: BoxDecoration(
           gradient: new LinearGradient(
             begin: FractionalOffset.topLeft,
@@ -55,7 +101,8 @@ class _SignInState extends State<SignIn> {
         ),
         padding: EdgeInsets.all(50.0),
         child: Form(
-          key: signInFormKey,
+          key: _formKey,
+          autovalidate: _autovalidate,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -74,8 +121,8 @@ class _SignInState extends State<SignIn> {
                 style: TextStyle(
                   color: Colors.white,
                 ),
-                validator: (value) => value.isEmpty ? 'Username or email is required' : null,
-                onSaved: (value) => _email = value,
+                validator: Validators.validateEmail,
+                onSaved: (value) => user.email = value,
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -97,15 +144,15 @@ class _SignInState extends State<SignIn> {
                   color: Colors.white,
                 ),
                 obscureText: _obscurePassword,
-                validator: (value) => value.isEmpty ? 'Password is required' : null,
-                onSaved: (value) => _password = value,
+                validator: Validators.validatePassword,
+                onSaved: (value) => user.password = value,
               ),
               Padding(
                 padding: EdgeInsets.only(top: 20.0),
                 child: Container(
                   alignment: Alignment.center,
                   child: CupertinoButton(
-                    onPressed: _signIn,
+                    onPressed: _handleSubmitted,
                     padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
                     color: Colors.white,
                     child: Text('SIGN IN', style: TextStyle(color: Colors.blue[600], fontSize: 18.0),),
@@ -115,7 +162,11 @@ class _SignInState extends State<SignIn> {
               Padding(
                 padding: EdgeInsets.only(top: 24.0),
                 child: GestureDetector(
-                  onTap: () => {},
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SignUp(),
+                    ),
+                  ),
                   child: Center(
                     child: RichText(
                       textAlign: TextAlign.right,
@@ -135,22 +186,8 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 24.0),
-                child: GestureDetector(
-                  onTap: () => {},
-                  child: Center(
-                    child: Text(
-                      "Forgot password?",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ],
-          ),),
+          ),
         ),
       ),
     );

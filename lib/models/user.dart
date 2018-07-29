@@ -21,14 +21,14 @@ class User {
       : name = response.name,
         email = response.email,
         password = response.password,
-        passwordConfirmation = response.passwordConfirmation;
+        passwordConfirmation = response.passwordConfirmation,
+        createdDate = response.createdDate;
 
-  toJson() =>
-    <String, dynamic>{
-      'name': this.name,
-      'email': this.email,
-      'password': this.password,
-      'password_confimation': this.passwordConfirmation,
-      'created_date': this.createdDate?.toIso8601String()
-    };
+  toJson() => <String, dynamic> {
+    'name': this.name,
+    'email': this.email,
+    'password': this.password,
+    'password_confimation': this.passwordConfirmation,
+    'created_date': this.createdDate?.toIso8601String()
+  };
 }

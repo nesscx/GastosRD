@@ -6,6 +6,8 @@ part 'company_expenses_response.g.dart';
 class CompanyExpensesResponse extends Object {
   @JsonKey(name: 'rnc_supplier')
   String rncSupplier;
+  @JsonKey(name: 'supplier_name')
+  String supplierName;
   String ncf;
   DateTime date;
   double total;
@@ -16,9 +18,12 @@ class CompanyExpensesResponse extends Object {
   String purchaseConcept;
   @JsonKey(name: 'company_rnc')
   String companyRnc;
+  @JsonKey(name: 'company_name')
+  String companyName;
 
   CompanyExpensesResponse({
     this.rncSupplier,
+    this.supplierName,
     this.ncf,
     this.date,
     this.total,
@@ -26,6 +31,7 @@ class CompanyExpensesResponse extends Object {
     this.imageUri,
     this.purchaseConcept,
     this.companyRnc,
+    this.companyName,
   });
 
   factory CompanyExpensesResponse.fromJson(Map<String, dynamic> json) => _$CompanyExpensesResponseFromJson(json);

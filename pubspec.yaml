@@ -21,6 +21,8 @@ dependencies:
   firebase_core:
   cloud_firestore: 
   json_annotation: 
+  http: 
+  firebase_storage: 
 
 dev_dependencies:
   build_runner: 

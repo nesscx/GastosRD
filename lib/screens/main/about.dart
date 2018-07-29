@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gastos_rd/models/user.dart';
 
 class About extends StatelessWidget {
+  final User user;
+
+  About(this.user);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +27,7 @@ class About extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
           ),
-          Text('José Gómez',
+          Text(user.name.toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 24.0,
@@ -35,9 +40,9 @@ class About extends StatelessWidget {
             children: <Widget>[
               Container(
                 width: 140.0,
-                child: Text('Full Name:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),),
+                child: Text('Name:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),),
               ),
-              Text('José Guillermo Gómez Alcalá', style: TextStyle(fontSize: 18.0),),
+              Text(user.name, style: TextStyle(fontSize: 18.0),),
             ],
           ),
           Padding(padding: EdgeInsets.symmetric(vertical: 4.0),),
@@ -47,7 +52,7 @@ class About extends StatelessWidget {
                 width: 140.0,
                 child: Text('Email:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
               ),
-              Text('jose4gga@gmail.com', style: TextStyle(fontSize: 18.0),),
+              Text(user.email, style: TextStyle(fontSize: 18.0),),
             ],
           ),
           Padding(padding: EdgeInsets.symmetric(vertical: 4.0),),
@@ -55,9 +60,9 @@ class About extends StatelessWidget {
             children: <Widget>[
               Container(
                 width: 140.0,
-                child: Text('Phone Number:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),),
+                child: Text('Created Date:', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),),
               ),
-              Text('+1 (809) 500-0000', style: TextStyle(fontSize: 18.0),),
+              Text(user.createdDate ?? 'Unknown', style: TextStyle(fontSize: 18.0),),
             ],
           ),
         ],

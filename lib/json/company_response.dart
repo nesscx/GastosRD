@@ -5,14 +5,23 @@ part 'company_response.g.dart';
 @JsonSerializable()
 class CompanyResponse extends Object {
   String rnc;
-  @JsonKey(name: 'service_name')
-  String serviceName;
+  String name;
+  @JsonKey(name: 'comercial_name')
+  String comercialName;
+  String category;
+  @JsonKey(name: 'payment_regimen')
+  String paymentRegimen;
+  String status;
   @JsonKey(name: 'user_email')
   String userEmail;
 
   CompanyResponse({
     this.rnc,
-    this.serviceName,
+    this.name,
+    this.comercialName,
+    this.category,
+    this.paymentRegimen,
+    this.status,
     this.userEmail,
   });
 

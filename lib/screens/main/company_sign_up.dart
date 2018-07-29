@@ -1,34 +1,49 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gastos_rd/components/group_title.dart';
+import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/models/company.dart';
+import 'package:gastos_rd/models/user.dart';
 
 // import 'package:socialy/data/rest_ds.dart';
 import '../../services/validators.dart';
 
-class CompanySignUp extends StatelessWidget {  
+class CompanySignUp extends StatelessWidget {
+  User user;
+
+  CompanySignUp(this.user);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView( 
-        primary: false,
-        child: CompanySignUpForm(),
+      body: SingleChildScrollView(
+        child: Container(
+          child: CompanySignUpForm(user),
+        ),
       ),
     );
   }
 }
 
 class CompanySignUpForm extends StatefulWidget {
+  User user;
+
+  CompanySignUpForm(this.user);
+
   @override
-  _CompanySignUpFormState createState() => _CompanySignUpFormState();
+  _CompanySignUpFormState createState() => _CompanySignUpFormState(user);
 }
 
 class _CompanySignUpFormState extends State<CompanySignUpForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final Validators _validators = new Validators();
   bool _autovalidate = false;
-  Company _newCompany = Company();
-  
+  Company _newCompany;
+  String _rnc;
+  User user;
+
+  _CompanySignUpFormState(this.user);
+
   void loading(){
     showDialog(
       context: context,
@@ -42,7 +57,7 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
     );
   }
 
-  void _handleSubmitted() {
+  void _handleSubmitted() async {
     final FormState form = _formKey.currentState;
     // loading();
     form.save();
@@ -50,16 +65,42 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
       setState(() {
         _autovalidate = true;
       });
-      // showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      _signUp();    
+      _newCompany = await RestDatasource.fetchCompany(_rnc);
+      print(_newCompany);
+      if (_newCompany == null) {
+        showInSnackBar('RNC is not valid. Please try again.');
+      }
+      else {
+        _signUp();
+      }
     }
   }
-
+  
+  void showInSnackBar(String value) {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      content: new Text(value)
+    ));
+  }
+  
   void _signUp() async {
-    print(_newCompany);
-    // await RestDatasource.signUp(_newUser);
+    final DocumentReference documentReference = Firestore.instance.collection("Company").document();
+    
+    _newCompany.userEmail = user.email;
+
+    final QuerySnapshot snapshot = await Firestore.instance
+        .collection("Company")
+        .where("user_email", isEqualTo: user.email)
+        .getDocuments();
+    
+    if(snapshot.documents.length > 0) {
+      showInSnackBar('Company with rnc ${_newCompany.rnc} already exists!');
+    } else {
+      documentReference.setData(_newCompany.toJson()).whenComplete(() {
+        showInSnackBar('Company ${_newCompany.name} registered successfully!');
+      }).catchError((e) => print(e));
+    }
   }
 
   @override
@@ -71,7 +112,6 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
         autovalidate: _autovalidate,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             GroupTitle(
               icon: Icon(Icons.business),
@@ -86,23 +126,11 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
                 fillColor: Colors.grey[150],
                 filled: true,
                 errorMaxLines: 2,
-                hintText: 'E.g: 1-2345678-9 or 123456789'
+                hintText: 'E.g: 123456789',
               ),
               keyboardType: TextInputType.number,
-              validator: (value) => _validators.validateRNC(value),
-              onSaved: (value) => _newCompany.rnc = value,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: "Service Name",
-                fillColor: Colors.grey[150],
-                filled: true,
-              ),
-              validator: (value) => _validators.validateName(value, "Service Name"),
-              onSaved: (value) => _newCompany.serviceName = value,
+              validator: (value) => Validators.validateRNC(value),
+              onSaved: (value) => _rnc = value,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -115,9 +143,6 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
                 color: Colors.blue[600],
                 child: Text('REGISTER', style: TextStyle(color: Colors.white, fontSize: 18.0),),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 24.0),
             ),
           ],
         ),

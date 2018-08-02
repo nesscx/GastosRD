@@ -71,6 +71,7 @@ class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final List<Company> companies;
   Company company;
+  Company supplierCompany;
   CompanyExpenses _newCompanyExpenses = CompanyExpenses(date: DateTime.now());
   File _image;
   bool _autovalidate = false;
@@ -122,8 +123,8 @@ class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      company = await RestDatasource.fetchCompany(company.rnc);
-      if (company == null) {
+      supplierCompany = await RestDatasource.fetchCompany(_newCompanyExpenses.rncSupplier);
+      if (supplierCompany == null) {
         showInSnackBar('RNC is not valid. Please try again.');
       }
       else {
@@ -143,17 +144,20 @@ class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
     _newCompanyExpenses.imageUri = downloadUrl.toString();
     _newCompanyExpenses.companyRnc = company.rnc;
     _newCompanyExpenses.companyName = company.name;
-    _newCompanyExpenses.supplierName = (await RestDatasource.fetchCompany(_newCompanyExpenses.rncSupplier)).name;
+    _newCompanyExpenses.supplierName = supplierCompany.name;
+    _newCompanyExpenses.rncSupplier = supplierCompany.name;
     
     final DocumentReference documentReference = Firestore.instance.collection("CompanyExpenses").document();
     
     documentReference.setData(_newCompanyExpenses.toJson()).whenComplete(() {
-      showInSnackBar('Expense of NCF:${_newCompanyExpenses.ncf} registered successfully!');
+      showInSnackBar('Expense of NCF: ${_newCompanyExpenses.ncf} registered successfully!');
     }).catchError((e) => print(e));
   }
 
   @override
   Widget build(BuildContext context) {
+    company = companies[0];
+    
     return Padding(
       padding: EdgeInsets.all(32.0),
       child: Form(

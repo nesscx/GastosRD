@@ -27,16 +27,19 @@ class CompanyExpenses {
 
   CompanyExpenses.fromResponse(CompanyExpensesResponse response)
       : rncSupplier = response.rncSupplier,
+        supplierName = response.supplierName,
         ncf = response.ncf,
         date = response.date,
         total = response.total,
         itbis = response.itbis,
         imageUri = response.imageUri,
         purchaseConcept = response.purchaseConcept,
-        companyRnc = response.companyRnc;
+        companyRnc = response.companyRnc,
+        companyName = response.companyName;
 
   toJson() => <String, dynamic> {
       'rnc_supplier': this.rncSupplier,
+      'supplier_name': this.supplierName,
       'ncf': this.ncf,
       'date': this.date?.toIso8601String(),
       'total': this.total,
@@ -44,5 +47,6 @@ class CompanyExpenses {
       'image_uri': this.imageUri,
       'purchase_concept': this.purchaseConcept,
       'company_rnc': this.companyRnc,
+      'company_name': this.companyName,
   };
 }

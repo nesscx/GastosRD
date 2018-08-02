@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gastos_rd/components/date_picker.dart';
 import 'package:gastos_rd/json/company_expenses_response.dart';
@@ -19,7 +18,7 @@ class SearchExpenses extends StatefulWidget {
 
 class _SearchExpensesState extends State<SearchExpenses> {
   final User user;
-  DateTime startDate = new DateTime(1999, 1, 1);
+  DateTime startDate = new DateTime(2000, 1, 1);
   DateTime endDate = new DateTime.now();
 
   _SearchExpensesState(this.user);
@@ -35,10 +34,9 @@ class _SearchExpensesState extends State<SearchExpenses> {
     if(snapshot.documents.length != 0) {
       snapshot.documents.forEach((d) async { 
         list.add(new CompanyExpenses.fromResponse(CompanyExpensesResponse.fromJson(d.data)));
+        print(list);
       });
     }
-
-    print(list);
 
     return list;
   }
@@ -49,50 +47,48 @@ class _SearchExpensesState extends State<SearchExpenses> {
       children: <Widget> [
         Column(
           children: <Widget>[
-            DatePicker(
-              decoration: InputDecoration(
-                labelText: 'Date',
-                fillColor: Colors.grey[150],
-                filled: true,
-              ),
-              firstDate: DateTime(2000, 1, 1),
-              selectedDate: startDate,
-              selectDate: (DateTime date) {
-                setState(() {
-                  startDate = date;
-                });
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 2.0),
-            ),
-            DatePicker(
-              decoration: InputDecoration(
-                labelText: 'Date',
-                fillColor: Colors.grey[150],
-                filled: true,
-              ),
-              firstDate: DateTime(2000, 1, 1),
-              selectedDate: endDate,
-              selectDate: (DateTime date) {
-                setState(() {
-                  endDate = date;
-                });
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 2.0),
-            ),
-            CupertinoButton(
-              onPressed: _getCompaniesExpenses,
-              padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
-              color: Colors.blue[600],
-              child: Text('SEARCH', style: TextStyle(color: Colors.white, fontSize: 18.0),),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Flexible(
+                  child: DatePicker(
+                  decoration: InputDecoration(
+                    labelText: 'Start Date',
+                    fillColor: Colors.grey[150],
+                    filled: true,
+                  ),
+                  firstDate: DateTime(2000, 1, 1),
+                  selectedDate: startDate,
+                  selectDate: (DateTime date) {
+                    setState(() {
+                      startDate = date;
+                    });
+                  },
+                ),),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                ),
+                Flexible(
+                  child: DatePicker(
+                    decoration: InputDecoration(
+                      labelText: 'End Date',
+                      fillColor: Colors.grey[150],
+                      filled: true,
+                    ),
+                    firstDate: DateTime(2000, 1, 1),
+                    selectedDate: endDate,
+                    selectDate: (DateTime date) {
+                      setState(() {
+                        endDate = date;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-        Container(
-          height: 489.0,
+        Flexible(
           child: FutureBuilder<List<CompanyExpenses>>(
           future: _getCompaniesExpenses(),
           builder: (context, snapshot) {
@@ -186,8 +182,13 @@ class _SearchExpensesState extends State<SearchExpenses> {
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
-            // By default, show a loading spinner
-            return CircularProgressIndicator();
+            return Center(
+              child: Container(
+                height: 60.0,
+                width: 60.0,
+                  child: CircularProgressIndicator(),
+              ),
+            );
           },
         ),
       ),

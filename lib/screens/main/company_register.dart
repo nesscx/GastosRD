@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gastos_rd/components/group_title.dart';
 import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/models/company.dart';
@@ -9,25 +8,21 @@ import 'package:gastos_rd/models/user.dart';
 // import 'package:socialy/data/rest_ds.dart';
 import '../../services/validators.dart';
 
-class CompanySignUp extends StatelessWidget {
-  User user;
+class CompanyRegister extends StatelessWidget {
+  final User user;
 
-  CompanySignUp(this.user);
+  CompanyRegister(this.user);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          child: CompanySignUpForm(user),
-        ),
-      ),
+    return Container(
+      child: CompanySignUpForm(user),  
     );
   }
 }
 
 class CompanySignUpForm extends StatefulWidget {
-  User user;
+  final User user;
 
   CompanySignUpForm(this.user);
 
@@ -58,6 +53,7 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
   }
 
   void _handleSubmitted() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     final FormState form = _formKey.currentState;
     // loading();
     form.save();
@@ -68,7 +64,6 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
     } else {
       form.save();
       _newCompany = await RestDatasource.fetchCompany(_rnc);
-      print(_newCompany);
       if (_newCompany == null) {
         showInSnackBar('RNC is not valid. Please try again.');
       }
@@ -129,6 +124,7 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
                 hintText: 'E.g: 123456789',
               ),
               keyboardType: TextInputType.number,
+              maxLength: 11,
               validator: (value) => Validators.validateRNC(value),
               onSaved: (value) => _rnc = value,
             ),
@@ -137,7 +133,7 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
             ), 
             Container(
               alignment: Alignment.center,
-              child: CupertinoButton(
+              child: FlatButton(
                 onPressed: _handleSubmitted,
                 padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
                 color: Colors.blue[600],

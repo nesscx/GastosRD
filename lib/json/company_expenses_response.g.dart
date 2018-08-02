@@ -8,7 +8,7 @@ part of 'company_expenses_response.dart';
 
 CompanyExpensesResponse _$CompanyExpensesResponseFromJson(
     Map<String, dynamic> json) {
-  return new CompanyExpensesResponse(
+  return CompanyExpensesResponse(
       rncSupplier: json['rnc_supplier'] as String,
       supplierName: json['supplier_name'] as String,
       ncf: json['ncf'] as String,

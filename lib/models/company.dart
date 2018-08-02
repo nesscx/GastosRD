@@ -1,5 +1,4 @@
 import 'package:gastos_rd/json/company_response.dart';
-import 'package:gastos_rd/models/company_expenses.dart';
 
 class Company {
   String rnc;

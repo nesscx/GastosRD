@@ -16,7 +16,7 @@ class About extends StatelessWidget {
           CircleAvatar(
             radius: 64.0,
             child: Text(
-              'J',
+              user.name[0],
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 48.0,

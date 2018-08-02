@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gastos_rd/components/group_title.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -178,7 +177,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ), 
             Container(
               alignment: Alignment.center,
-              child: CupertinoButton(
+              child: FlatButton(
                 onPressed: _handleSubmitted,
                 padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
                 color: Colors.blue[600],

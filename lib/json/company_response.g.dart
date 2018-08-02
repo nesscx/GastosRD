@@ -7,7 +7,7 @@ part of 'company_response.dart';
 // **************************************************************************
 
 CompanyResponse _$CompanyResponseFromJson(Map<String, dynamic> json) {
-  return new CompanyResponse(
+  return CompanyResponse(
       rnc: json['rnc'] as String,
       name: json['name'] as String,
       comercialName: json['comercial_name'] as String,

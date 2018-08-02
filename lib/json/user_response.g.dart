@@ -7,7 +7,7 @@ part of 'user_response.dart';
 // **************************************************************************
 
 UserResponse _$UserResponseFromJson(Map<String, dynamic> json) {
-  return new UserResponse(
+  return UserResponse(
       name: json['name'] as String,
       email: json['email'] as String,
       password: json['password'] as String,

@@ -27,8 +27,8 @@ class Validators {
 
   static String validateRNC(String value) {
     if (value.isEmpty) return 'RNC is required,';
-    if (value.length != 9) return 'RNC must contain 9 numbers';
-    final RegExp nameExp = new RegExp(r'^[(0-9){9}]*$');
+    if (value.length != 9 && value.length != 11) return 'RNC must contain 9 or 11 numbers';
+    final RegExp nameExp = new RegExp(r'^[(0-9)]*$');
     if (!nameExp.hasMatch(value)) return 'Only numbers are allowed.';
     return null;
   }

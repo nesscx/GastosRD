@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gastos_rd/components/group_title.dart';
 import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/json/company_response.dart';
@@ -13,7 +12,6 @@ import 'package:gastos_rd/models/user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-// import 'package:socialy/data/rest_ds.dart';
 import '../../services/validators.dart';
 import '../../components/date_picker.dart';
 
@@ -24,21 +22,20 @@ class CompanyExpensesRegister extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView( 
-        primary: false,
-        child: FutureBuilder<List<Company>>(
-          future: _getCompanies(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return CompanyExpensesRegisterForm(snapshot.data);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-            // By default, show a loading spinner
-            return CircularProgressIndicator();
-          },
-        ),
+    return SingleChildScrollView(
+      child: FutureBuilder<List<Company>>(
+        future: _getCompanies(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return CompanyExpensesRegisterForm(snapshot.data);
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          // By default, show a loading spinner
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
@@ -67,23 +64,26 @@ class CompanyExpensesRegisterForm extends StatefulWidget {
   CompanyExpensesRegisterForm(this.companies);
 
   @override
-  companyExpensesRegisterFormState createState() => companyExpensesRegisterFormState(companies);
+  CompanyExpensesRegisterFormState createState() => CompanyExpensesRegisterFormState(companies);
 }
 
-class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm> {
+class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  bool _autovalidate = false;
-  bool _obscurePassword = true;
-  bool _obscureRepeatPassword = true;
-  CompanyExpenses _newCompanyExpenses = CompanyExpenses(date: DateTime.now());
   final List<Company> companies;
-  Company _newCompany;
-
-  companyExpensesRegisterFormState(this.companies);
-  
+  Company company;
+  CompanyExpenses _newCompanyExpenses = CompanyExpenses(date: DateTime.now());
   File _image;
+  bool _autovalidate = false;
 
-  getImage() async {
+  CompanyExpensesRegisterFormState(this.companies);
+  
+  @override
+  initState() {
+    super.initState();
+    company = companies[0];
+  }
+
+  _getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
 
     if (image != null) {
@@ -113,16 +113,17 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
   }
 
   void _handleSubmitted() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
       setState(() {
         _autovalidate = true;
       });
-      // showInSnackBar('Please fix the errors in red before submitting.');
+      showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      _newCompany = await RestDatasource.fetchCompany(_newCompanyExpenses.rncSupplier);
-      if (_newCompany == null) {
+      company = await RestDatasource.fetchCompany(company.rnc);
+      if (company == null) {
         showInSnackBar('RNC is not valid. Please try again.');
       }
       else {
@@ -140,8 +141,8 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
     Uri downloadUrl = (await putFile.future).downloadUrl;
 
     _newCompanyExpenses.imageUri = downloadUrl.toString();
-    _newCompanyExpenses.companyRnc = _newCompany.rnc;
-    _newCompanyExpenses.companyName = _newCompany.name;
+    _newCompanyExpenses.companyRnc = company.rnc;
+    _newCompanyExpenses.companyName = company.name;
     _newCompanyExpenses.supplierName = (await RestDatasource.fetchCompany(_newCompanyExpenses.rncSupplier)).name;
     
     final DocumentReference documentReference = Firestore.instance.collection("CompanyExpenses").document();
@@ -153,8 +154,6 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
 
   @override
   Widget build(BuildContext context) {
-    Company company = companies[0];
-
     return Padding(
       padding: EdgeInsets.all(32.0),
       child: Form(
@@ -171,6 +170,9 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
               icon: Icon(Icons.room_service),
               title: 'Service',
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 6.0),
+            ),
             InputDecorator(
               decoration: InputDecoration(
                 labelText: 'Select a Company',
@@ -178,24 +180,26 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
                 filled: true,
               ),
               isEmpty: company == null,
-              child: DropdownButton<Company>(
-                isDense: true,
-                hint: Text('Select a Company'),
-                value: company,
-                onChanged: (newValue) {
-                  setState(() {
-                    company = newValue;
-                  });
-                },
-                items: companies.map((Company company) {
-                  return DropdownMenuItem<Company>(
-                    value: company,
-                    child: Text(
-                      company.name,
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  );
-                }).toList(),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Company>(
+                  isDense: true,
+                  hint: Text('Select a Company'),
+                  value: company,
+                  onChanged: (newValue) {
+                    setState(() {
+                      company = newValue;
+                    });
+                  },
+                  items: companies.map((Company company) {
+                    return DropdownMenuItem<Company>(
+                      value: company,
+                      child: Text(
+                        company.name,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
             Padding(
@@ -206,10 +210,11 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
               title: 'Supplier Information',
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 12.0),
+              padding: EdgeInsets.symmetric(vertical: 6.0),
             ),
             TextFormField(
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.number,
+              maxLength: 11,
               decoration: InputDecoration(
                 labelText: "RNC Supplier",
                 fillColor: Colors.grey[150],
@@ -226,10 +231,10 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
               title: 'Invoice Information',
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              padding: EdgeInsets.symmetric(vertical: 6.0),
             ),
             TextFormField(
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 labelText: "NCF",
                 fillColor: Colors.grey[150],
@@ -287,14 +292,26 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
             Row(
               children: <Widget>[
                 Flexible(
-                  child: _image == null 
-                    ? Text('No image to show')
-                    : Image.file(_image),
+                  child: Center(
+                    child: _image == null
+                      ? InkWell(
+                          onTap: _getImage,
+                          child: Image.asset('images/no_image.jpg'),
+                        )
+                      : Image.file(_image),
+                  ),
                 ),
                 Flexible(
-                  child: CupertinoButton(
-                    onPressed: getImage,
-                    child: Text('Select Photo'),
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(horizontal: 6.0),
+                    child: FlatButton(
+                      onPressed: _getImage,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                        child: Text('Select Photo for Evidence', textAlign: TextAlign.center,),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -303,6 +320,8 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
               padding: const EdgeInsets.symmetric(vertical: 12.0),
             ),
             TextFormField(
+              keyboardType: TextInputType.multiline,
+              maxLength: 300,
               decoration: InputDecoration(
                 labelText: "Purchase Concept",
                 fillColor: Colors.grey[150],
@@ -316,7 +335,7 @@ class companyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
             ), 
             Container(
               alignment: Alignment.center,
-              child: CupertinoButton(
+              child: FlatButton(
                 onPressed: _handleSubmitted,
                 padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
                 color: Colors.blue[600],

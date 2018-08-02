@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:gastos_rd/json/user_response.dart';
-// import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/models/user.dart';
 import 'package:gastos_rd/screens/auth/sign_up.dart';
 import 'package:gastos_rd/screens/index.dart';
@@ -65,7 +64,7 @@ class _SignInFormState extends State<SignInForm> {
         builder: (BuildContext context) => HomePage(user),
       ));
     } else {
-      await showInSnackBar('Email or password is incorrect.');
+      showInSnackBar('Email or password is incorrect.');
     }
   }
   
@@ -151,7 +150,7 @@ class _SignInFormState extends State<SignInForm> {
                 padding: EdgeInsets.only(top: 20.0),
                 child: Container(
                   alignment: Alignment.center,
-                  child: CupertinoButton(
+                  child: FlatButton(
                     onPressed: _handleSubmitted,
                     padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
                     color: Colors.white,

@@ -1,21 +1,13 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gastos_rd/json/company_response.dart';
-import 'package:gastos_rd/models/company.dart';
 import 'package:gastos_rd/models/user.dart';
 
 // Pages
-import './main/company_sign_up.dart';
+import './main/company_register.dart';
 import './main/company_expenses_register.dart';
 import './main/search_expenses.dart';
 import './main/about.dart';
 
 // Screens
-// import '../screens/home.dart';
-// import '../screens/parallax_list.dart';
-// import '../screens/second_screen.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
@@ -28,35 +20,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedDrawerIndex = 0;
-  final NetworkImage userImage = new NetworkImage('https://lh3.googleusercontent.com/-8dg263oazcQ/AAAAAAAAAAI/AAAAAAAAAAA/AB6qoq23B20ArLMIL0kFHyMvk_FBOFKyNA/s120-p-no-mo-il/photo.jpg');
-  final NetworkImage userBackgroundImage = new NetworkImage('https://hdwallpaperim.com/wp-content/uploads/2017/08/25/466074-low_poly-landscape-mountains-mist-dead_trees-forest-river-water-stones-fence-trunks-Axe-hills-digital_art-3D-Cinema_4D-748x421.jpg');
-  bool _userImageLoading = true;
-  bool _userBackgroundImageLoading = true;
+  // bool _userImageLoading = true;
+  // bool _userBackgroundImageLoading = true;
   User user;
   
   _HomePageState(this.user);
 
-  @override
-  void initState() {
-    userImage.resolve(new ImageConfiguration()).addListener((_, __) {
-      if (mounted) {
-        setState(() {
-          _userImageLoading = false;
-        });
-      }
-    });
-    userBackgroundImage.resolve(new ImageConfiguration()).addListener((_, __) {
-      if (mounted) {
-        setState(() {
-          _userBackgroundImageLoading = false;
-        });
-      }
-    });
-  }
+  // @override
+  // void initState() {
+  //   userImage.resolve(new ImageConfiguration()).addListener((_, __) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _userImageLoading = false;
+  //       });
+  //     }
+  //   });
+  //   userBackgroundImage.resolve(new ImageConfiguration()).addListener((_, __) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _userBackgroundImageLoading = false;
+  //       });
+  //     }
+  //   });
+  // }
 
   _getDrawerItemWidget(int pos) {
     if (pos == 1) {
-      return new CompanySignUp(user);
+      return new CompanyRegister(user);
     } else if (pos == 2) {
       return new CompanyExpensesRegister(user);
     } else if (pos == 3) {
@@ -109,7 +99,7 @@ class _HomePageState extends State<HomePage> {
               decoration: new BoxDecoration(
                 image: new DecorationImage(
                   fit: BoxFit.fill,
-                  image: userBackgroundImage,
+                  image: AssetImage('images/background.jpg'),
                 ),
               ),
             ),

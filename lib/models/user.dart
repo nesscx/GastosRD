@@ -1,7 +1,4 @@
-// import 'package:socialy/json/user_response.dart';
-
 import 'package:gastos_rd/json/user_response.dart';
-import 'package:gastos_rd/models/company.dart';
 
 class User {
   String name;

@@ -20,17 +20,17 @@ class _InputDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new InkWell(
+    return InkWell(
       onTap: onPressed,
-      child: new InputDecorator(
+      child: InputDecorator(
         decoration: decoration,
         baseStyle: valueStyle,
-        child: new Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            new Text(valueText, style: valueStyle),
-            new Icon(Icons.arrow_drop_down,
+            Text(valueText, style: valueStyle),
+            Icon(Icons.arrow_drop_down,
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade700 : Colors.white70
             ),
           ],
@@ -72,14 +72,14 @@ class DatePicker extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return new Row(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
-        new Expanded(
+        Expanded(
           flex: 4,
-          child: new _InputDropdown(
+          child: _InputDropdown(
             decoration: decoration,
-            valueText: new DateFormat.yMMMMd().format(selectedDate),
+            valueText: DateFormat.yMMMMd().format(selectedDate),
             valueStyle: valueStyle,
             onPressed: () { _selectDate(context); },
           ),

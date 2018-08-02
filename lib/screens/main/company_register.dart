@@ -5,7 +5,6 @@ import 'package:gastos_rd/data/rest_ds.dart';
 import 'package:gastos_rd/models/company.dart';
 import 'package:gastos_rd/models/user.dart';
 
-// import 'package:socialy/data/rest_ds.dart';
 import '../../services/validators.dart';
 
 class CompanyRegister extends StatelessWidget {
@@ -31,7 +30,7 @@ class CompanySignUpForm extends StatefulWidget {
 }
 
 class _CompanySignUpFormState extends State<CompanySignUpForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autovalidate = false;
   Company _newCompany;
   String _rnc;
@@ -42,9 +41,9 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
   void loading(){
     showDialog(
       context: context,
-      builder: (BuildContext context) => new Dialog(
+      builder: (BuildContext context) => Dialog(
         child: SingleChildScrollView(
-          child: new Container(
+          child: Container(
             height: 600.0,
           )
         ),
@@ -53,7 +52,7 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
   }
 
   void _handleSubmitted() async {
-    FocusScope.of(context).requestFocus(new FocusNode());
+    FocusScope.of(context).requestFocus(FocusNode());
     final FormState form = _formKey.currentState;
     // loading();
     form.save();
@@ -74,8 +73,8 @@ class _CompanySignUpFormState extends State<CompanySignUpForm> {
   }
   
   void showInSnackBar(String value) {
-    Scaffold.of(context).showSnackBar(new SnackBar(
-      content: new Text(value)
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(value)
     ));
   }
   

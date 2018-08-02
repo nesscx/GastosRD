@@ -20,18 +20,18 @@ class SignInForm extends StatefulWidget {
 }
 
 class _SignInFormState extends State<SignInForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autovalidate = false;
   bool _obscurePassword = true;
-  User user = new User();
+  User user = User();
   
   void loading(){
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => new Dialog(
+      builder: (BuildContext context) => Dialog(
         child: SingleChildScrollView(
-          child: new CircularProgressIndicator(),
+          child: CircularProgressIndicator(),
         ),
       ),
     );
@@ -60,7 +60,7 @@ class _SignInFormState extends State<SignInForm> {
     if(snapshot.documents.length > 0) {
       User user = User.fromResponse(UserResponse.fromJson(snapshot.documents.first.data));
 
-      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (BuildContext context) => HomePage(user),
       ));
     } else {
@@ -69,8 +69,8 @@ class _SignInFormState extends State<SignInForm> {
   }
   
   void showInSnackBar(String value) {
-    Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text(value)
+    Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(value)
     ));
   }
 
@@ -89,7 +89,7 @@ class _SignInFormState extends State<SignInForm> {
       ),
       child: Container(
         decoration: BoxDecoration(
-          gradient: new LinearGradient(
+          gradient: LinearGradient(
             begin: FractionalOffset.topLeft,
             end: FractionalOffset.bottomRight,
             colors: <Color>[

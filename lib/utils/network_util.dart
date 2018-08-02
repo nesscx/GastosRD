@@ -5,14 +5,14 @@ import 'package:http/http.dart' as http;
 
 class NetworkUtil {
   // next three lines makes this class a Singleton
-  static NetworkUtil _instance = new NetworkUtil.internal();
+  static NetworkUtil _instance = NetworkUtil.internal();
   NetworkUtil.internal();
   factory NetworkUtil() => _instance;
 
   static final http.Client _client = http.Client();
-  static final HttpClient _httpClient = new HttpClient();
+  static final HttpClient _httpClient = HttpClient();
 
-  static final JsonDecoder _decoder = new JsonDecoder();
+  static final JsonDecoder _decoder = JsonDecoder();
 
   static Future<dynamic> get(String url, {Map headers}) async {
     return await _client.get(url, headers: headers)
@@ -21,7 +21,7 @@ class NetworkUtil {
       final int statusCode = response.statusCode;
 
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data");
+        throw Exception("Error while fetching data");
       }
       return _decoder.convert(res);
     });
@@ -34,7 +34,7 @@ class NetworkUtil {
   //     final String res = response.body;
   //     final int statusCode = response.statusCode;
   //     if (statusCode < 200 || statusCode > 400 || json == null) {
-  //       throw new Exception("Error while fetching data");
+  //       throw Exception("Error while fetching data");
   //     }
   //     return _decoder.convert(res);
   //   });

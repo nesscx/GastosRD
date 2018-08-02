@@ -24,8 +24,8 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
-  final TextEditingController _passwordController = new TextEditingController();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autovalidate = false;
   bool _obscurePassword = true;
   bool _obscureRepeatPassword = true;
@@ -35,9 +35,9 @@ class _SignUpFormState extends State<SignUpForm> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => new Dialog(
+      builder: (BuildContext context) => Dialog(
         child: SingleChildScrollView(
-          child: new CircularProgressIndicator(),
+          child: CircularProgressIndicator(),
         ),
       ),
     );
@@ -57,8 +57,8 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   void showInSnackBar(String value) {
-    Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text(value)
+    Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(value)
     ));
   }
 

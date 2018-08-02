@@ -18,13 +18,13 @@ class SearchExpenses extends StatefulWidget {
 
 class _SearchExpensesState extends State<SearchExpenses> {
   final User user;
-  DateTime startDate = new DateTime(2000, 1, 1);
-  DateTime endDate = new DateTime.now();
+  DateTime startDate = DateTime(2000, 1, 1);
+  DateTime endDate = DateTime.now();
 
   _SearchExpensesState(this.user);
 
   Future<List<CompanyExpenses>> _getCompaniesExpenses() async {
-    List<CompanyExpenses> list = new List<CompanyExpenses>();
+    List<CompanyExpenses> list = List<CompanyExpenses>();
 
     final QuerySnapshot snapshot = await Firestore.instance
         .collection("CompanyExpenses")
@@ -33,7 +33,7 @@ class _SearchExpensesState extends State<SearchExpenses> {
     
     if(snapshot.documents.length != 0) {
       snapshot.documents.forEach((d) async { 
-        list.add(new CompanyExpenses.fromResponse(CompanyExpensesResponse.fromJson(d.data)));
+        list.add(CompanyExpenses.fromResponse(CompanyExpensesResponse.fromJson(d.data)));
         print(list);
       });
     }

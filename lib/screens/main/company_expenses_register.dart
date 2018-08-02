@@ -41,7 +41,7 @@ class CompanyExpensesRegister extends StatelessWidget {
   }
 
   Future<List<Company>> _getCompanies() async {
-    List<Company> list = new List<Company>();
+    List<Company> list = List<Company>();
     final QuerySnapshot snapshot = await Firestore.instance
         .collection("Company")
         .where("user_email", isEqualTo: user.email)
@@ -51,7 +51,7 @@ class CompanyExpensesRegister extends StatelessWidget {
       return list;
     } else {
       snapshot.documents.forEach((d) { 
-        list.add(new Company.fromResponse(CompanyResponse.fromJson(d.data)));
+        list.add(Company.fromResponse(CompanyResponse.fromJson(d.data)));
       });
       return list;
     }
@@ -68,7 +68,7 @@ class CompanyExpensesRegisterForm extends StatefulWidget {
 }
 
 class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final List<Company> companies;
   Company company;
   CompanyExpenses _newCompanyExpenses = CompanyExpenses(date: DateTime.now());
@@ -96,9 +96,9 @@ class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
   void loading(){
     showDialog(
       context: context,
-      builder: (BuildContext context) => new Dialog(
+      builder: (BuildContext context) => Dialog(
         child: SingleChildScrollView(
-          child: new Container(
+          child: Container(
             height: 600.0,
           )
         ),
@@ -107,13 +107,13 @@ class CompanyExpensesRegisterFormState extends State<CompanyExpensesRegisterForm
   }
   
   void showInSnackBar(String value) {
-    Scaffold.of(context).showSnackBar(new SnackBar(
-      content: new Text(value)
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(value)
     ));
   }
 
   void _handleSubmitted() async {
-    FocusScope.of(context).requestFocus(new FocusNode());
+    FocusScope.of(context).requestFocus(FocusNode());
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
       setState(() {

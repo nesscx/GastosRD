@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
   HomePage(this.user);
 
   @override
-  _HomePageState createState() => new _HomePageState(user);
+  _HomePageState createState() => _HomePageState(user);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -28,14 +28,14 @@ class _HomePageState extends State<HomePage> {
 
   // @override
   // void initState() {
-  //   userImage.resolve(new ImageConfiguration()).addListener((_, __) {
+  //   userImage.resolve(ImageConfiguration()).addListener((_, __) {
   //     if (mounted) {
   //       setState(() {
   //         _userImageLoading = false;
   //       });
   //     }
   //   });
-  //   userBackgroundImage.resolve(new ImageConfiguration()).addListener((_, __) {
+  //   userBackgroundImage.resolve(ImageConfiguration()).addListener((_, __) {
   //     if (mounted) {
   //       setState(() {
   //         _userBackgroundImageLoading = false;
@@ -46,15 +46,15 @@ class _HomePageState extends State<HomePage> {
 
   _getDrawerItemWidget(int pos) {
     if (pos == 1) {
-      return new CompanyRegister(user);
+      return CompanyRegister(user);
     } else if (pos == 2) {
-      return new CompanyExpensesRegister(user);
+      return CompanyExpensesRegister(user);
     } else if (pos == 3) {
-      return new SearchExpenses(user);
+      return SearchExpenses(user);
     } else if (pos == 4) {
-      return new About(user);
+      return About(user);
     } else {
-      return new About(user);
+      return About(user);
     }
   }
 
@@ -65,16 +65,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
           children: <Widget>[
-            new Text(
+            Text(
               'Gastos RD',
             ),
-            new Padding(
+            Padding(
               padding: EdgeInsets.only(left: 8.0),
-              child: new Icon(
+              child: Icon(
                 Icons.spa,
                 color: Colors.lime,
               ),
@@ -83,29 +83,29 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: Colors.green[800],
       ),
-      drawer: new Drawer(
-        child: new ListView(
+      drawer: Drawer(
+        child: ListView(
           children: <Widget>[
-            new UserAccountsDrawerHeader(
-              accountName: new Text(user.name),
-              accountEmail: new Text(user.email),
-              currentAccountPicture: new GestureDetector(
+            UserAccountsDrawerHeader(
+              accountName: Text(user.name),
+              accountEmail: Text(user.email),
+              currentAccountPicture: GestureDetector(
                 onTap: () {} ,
-                child: new CircleAvatar(
+                child: CircleAvatar(
                   backgroundColor: Colors.green,
                   child: Text(user.name[0].toUpperCase(), style: TextStyle(fontSize: 32.0, color: Colors.white),),
                 ),
               ),
-              decoration: new BoxDecoration(
-                image: new DecorationImage(
+              decoration: BoxDecoration(
+                image: DecorationImage(
                   fit: BoxFit.fill,
                   image: AssetImage('images/background.jpg'),
                 ),
               ),
             ),
-            new ListTile(
-              title: new Text("Register a Company"),
-              leading: new Icon(Icons.business,),
+             ListTile(
+              title:  Text("Register a Company"),
+              leading: Icon(Icons.business,),
               selected: 1 == _selectedDrawerIndex,
               onTap: () {
                 _onSelectItem(1);
@@ -114,9 +114,9 @@ class _HomePageState extends State<HomePage> {
                 });
               }
             ),
-            new ListTile(
-              title: new Text("Register Expenses"),
-              leading: new Icon(Icons.receipt,),
+            ListTile(
+              title: Text("Register Expenses"),
+              leading: Icon(Icons.receipt,),
               selected: 2 == _selectedDrawerIndex,
               onTap: () {
                 _onSelectItem(2);
@@ -125,9 +125,9 @@ class _HomePageState extends State<HomePage> {
                 });
               }
             ),
-            new ListTile(
-              title: new Text("Search expenses"),
-              leading: new Icon(Icons.search,),
+            ListTile(
+              title: Text("Search expenses"),
+              leading: Icon(Icons.search,),
               selected: 3 == _selectedDrawerIndex,
               onTap: () {
                 _onSelectItem(3);
@@ -136,9 +136,9 @@ class _HomePageState extends State<HomePage> {
                 });
               }
             ),
-            new ListTile(
-              title: new Text("About"),
-              leading: new Icon(Icons.person,),
+            ListTile(
+              title: Text("About"),
+              leading: Icon(Icons.person,),
               selected: 4 == _selectedDrawerIndex,
               onTap: () {
                 _onSelectItem(4);
@@ -147,10 +147,10 @@ class _HomePageState extends State<HomePage> {
                 });
               }
             ),
-            new Divider(),
-            new ListTile(
-              title: new Text("Close"),
-              leading: new Icon(Icons.cancel,),
+            Divider(),
+            ListTile(
+              title: Text("Close"),
+              leading: Icon(Icons.cancel,),
               onTap: () => Navigator.of(context).pop(),
             ),
           ],

@@ -31,7 +31,6 @@ class CompanyExpensesRegister extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
-          // By default, show a loading spinner
           return Center(
             child: CircularProgressIndicator(),
           );
@@ -48,7 +47,7 @@ class CompanyExpensesRegister extends StatelessWidget {
         .getDocuments();
     
     if(snapshot.documents.length == 0) {
-      return list;
+      return null;
     } else {
       snapshot.documents.forEach((d) { 
         list.add(Company.fromResponse(CompanyResponse.fromJson(d.data)));

@@ -63,6 +63,7 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   void _signUp() async {
+    FocusScope.of(context).requestFocus(FocusNode());
     final DocumentReference documentReference = Firestore.instance.collection("User").document();
     _newUser.createdDate = DateTime.now();
 

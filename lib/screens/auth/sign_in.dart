@@ -51,6 +51,7 @@ class _SignInFormState extends State<SignInForm> {
   }
 
   void _signIn() async {
+    FocusScope.of(context).requestFocus(FocusNode());
     final QuerySnapshot snapshot = await Firestore.instance
         .collection("User")
         .where("email", isEqualTo: user.email)

@@ -34,7 +34,6 @@ class _SearchExpensesState extends State<SearchExpenses> {
     if(snapshot.documents.length != 0) {
       snapshot.documents.forEach((d) async { 
         list.add(CompanyExpenses.fromResponse(CompanyExpensesResponse.fromJson(d.data)));
-        print(list);
       });
     }
 
